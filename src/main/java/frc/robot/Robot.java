@@ -5,18 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,22 +18,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final XboxController xboxController = new XboxController(0);
-
-  private final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
- 
-  private final SwerveDrivetrain swervedrive = new SwerveDrivetrain();
+  public XboxController xboxController = new XboxController(0);
+  public ControllerState controllerState = new ControllerState();
+  public SwerveDrive swerveDrive = new SwerveDrive();
   
-
-  // MOTOR CONTOLLERS - PROJETILE
-  // private final CANSparkMax elevator = new CANSparkMax(0,
-  // MotorType.kBrushless);
-  // private final CANSparkMax pitch = new CANSparkMax(0, MotorType.kBrushless);
-  // private final TalonFX leftlauncher = new TalonFX(0);
-  // private final TalonFX rightlauncher = new TalonFX(0);
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -101,8 +79,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    driveWithJoystick(true);
+    // update controller state
+    controllerState.update(xboxController);
 
+    // send state to swerve drive
+    swerveDrive.update(controllerState);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -133,27 +114,5 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-  }
-
-  private void driveWithJoystick(boolean fieldRelative) {
-    // Get the x speed. We are inverting this because Xbox controllers return
-    // negative values when we push forward.
-    final var xSpeed = -xspeedLimiter.calculate(MathUtil.applyDeadband(xboxController.getLeftY(), 0.02))
-        * SwerveDrivetrain.kMaxSpeed;
-
-    // Get the y speed or sideways/strafe speed. We are inverting this because
-    // we want a positive value when we pull to the left. Xbox controllers
-    // return positive values when you pull to the right by default.
-    final var ySpeed = -yspeedLimiter.calculate(MathUtil.applyDeadband(xboxController.getLeftX(), 0.02))
-        * SwerveDrivetrain.kMaxSpeed;
-
-    // Get the rate of angular rotation. We are inverting this because we want a
-    // positive value when we pull to the left (remember, CCW is positive in
-    // mathematics). Xbox controllers return positive values when you pull to
-    // the right by default.
-    final var rot = -rotLimiter.calculate(MathUtil.applyDeadband(xboxController.getRightX(), 0.02))
-        * SwerveDrivetrain.kMaxAngularSpeed;
-
-    swervedrive.drive(xSpeed, ySpeed, rot, fieldRelative);
   }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+// import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -19,8 +20,13 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class Robot extends TimedRobot {
   public XboxController xboxController = new XboxController(0);
-  public ControllerState controllerState = new ControllerState();
+  // public Joystick joyStick = new Joystick(0)
+  public DriveState driveState = new DriveState();
   public SwerveDrive swerveDrive = new SwerveDrive();
+  
+  
+  // public LaunchDrive launchDrive = new LaunchDrive();
+
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -43,6 +49,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    swerveDrive.outputTelemetry();
   }
 
   /**
@@ -71,7 +78,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
   }
 
-  /** This function is called once when teleop is enabled. */
+  /** This function isq called once when teleop is enabled. */
   @Override
   public void teleopInit() {
   }
@@ -80,10 +87,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // update controller state
-    controllerState.update(xboxController);
-
+    driveState.update(xboxController);
+    
     // send state to swerve drive
-    swerveDrive.update(controllerState);
+    swerveDrive.update(driveState);
+    // launchDrive.teleopPeriodic();
+    // elevatorDrive.update(driveState);
+    // pitchDrive.update(driveState);
+    // launchDrive.update(driveState);
   }
 
   /** This function is called once when the robot is disabled. */

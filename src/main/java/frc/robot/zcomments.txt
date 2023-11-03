@@ -1,0 +1,12 @@
+xboxController is Controller 1, port 0. 
+xboxControllerTwo is Controller 2, port 1.
+Double check above in Drivestation.
+
+xboxController is used for driving, utilizing mostly the left thumbstick.
+Bumpers/Trigges are used to 'yaw' the robot.
+
+xboxControlelr is the fire control group. Left joystick Y raises and lowers the elevator. 
+Right joystick Y increases/decreases pitch. 
+Triggers power flywheels
+
+
